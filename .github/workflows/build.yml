@@ -41,6 +41,12 @@ jobs:
         name: code-coverage-report
         path: coverage.out
 
+    - name: Archive test results
+      uses: actions/upload-artifact@v1
+      with:
+        name: code-test-results
+        path: test-results.out
+
   sonarcloud:
     needs: build
     name: Static Scan
@@ -53,12 +59,18 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Download coverage results
+    - name: Download coverage report
       uses: actions/download-artifact@v1
       with:
         name: code-coverage-report
-        path: coverage.out
-    
+        path: ./
+
+    - name: Download test results
+      uses: actions/download-artifact@v1
+      with:
+        name: code-test-results
+        path: ./
+
     - name: SonarCloud scan
       uses: SonarSource/sonarcloud-github-action@master
       env:
