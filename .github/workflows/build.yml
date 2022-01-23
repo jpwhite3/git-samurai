@@ -45,7 +45,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: code-test-results
-        path: test-results.out
+        path: test-results.json
 
   sonarcloud:
     needs: build
