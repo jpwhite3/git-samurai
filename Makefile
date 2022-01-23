@@ -6,8 +6,11 @@ clean:
 	rm -f coverage.out
 
 test: clean
-	go test `go list ./...` -json > test-results.json
 	go test -short -coverprofile=coverage.out `go list ./...`
+	go tool cover -func=coverage.out
+
+test-ci: clean
+	go test `go list ./...` -coverprofile=coverage.out -json > test-results.json
 	go tool cover -func=coverage.out
 
 test-report: test
