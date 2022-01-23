@@ -31,9 +31,9 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Test
-      run: make test-package
+      run: make test
       env:
-        CGO_ENABLED: '1' 
+        CGO_ENABLED: '1'
 
     - name: Archive coverage results
       uses: actions/upload-artifact@v1
