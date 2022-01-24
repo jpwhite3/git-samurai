@@ -25,7 +25,13 @@ import (
 	"errors"
 	"fmt"
 
+	"time"
+
 	"github.com/spf13/cobra"
+
+	"github.com/go-git/go-git/v5"
+	. "github.com/go-git/go-git/v5/_examples"
+	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
 // syncCmd represents the sync command
@@ -40,6 +46,30 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("sync called")
+
+		r, err := git.PlainOpen(".")
+
+		CheckIfError(err)
+
+		Info("git log")
+
+		// ... retrieves the branch pointed by HEAD
+		ref, err := r.Head()
+		CheckIfError(err)
+
+		// ... retrieves the commit history
+		since := time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)
+		until := time.Date(2022, 7, 30, 0, 0, 0, 0, time.UTC)
+		cIter, err := r.Log(&git.LogOptions{From: ref.Hash(), Since: &since, Until: &until})
+		CheckIfError(err)
+
+		// ... just iterates over the commits, printing it
+		err = cIter.ForEach(func(c *object.Commit) error {
+			fmt.Println(c)
+
+			return nil
+		})
+		CheckIfError(err)
 	},
 }
 
