@@ -24,15 +24,22 @@ package cmd
 import (
 	"errors"
 	"fmt"
-
-	"time"
+	"os"
 
 	"github.com/spf13/cobra"
 
 	"github.com/go-git/go-git/v5"
-	. "github.com/go-git/go-git/v5/_examples"
-	"github.com/go-git/go-git/v5/plumbing/object"
+	dbutils "github.com/jpwhite3/git-samurai/dbutils"
 )
+
+func CheckIfError(err error) {
+	if err == nil {
+		return
+	}
+
+	fmt.Printf("\x1b[31;1m%s\x1b[0m\n", fmt.Sprintf("error: %s", err))
+	os.Exit(1)
+}
 
 // syncCmd represents the sync command
 var syncCmd = &cobra.Command{
@@ -45,30 +52,15 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("sync called")
-
 		r, err := git.PlainOpen(".")
-
 		CheckIfError(err)
 
-		Info("git log")
-
-		// ... retrieves the branch pointed by HEAD
-		ref, err := r.Head()
+		// Retrieve the commit history
+		cIter, err := r.Log(&git.LogOptions{All: true})
 		CheckIfError(err)
 
-		// ... retrieves the commit history
-		since := time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)
-		until := time.Date(2022, 7, 30, 0, 0, 0, 0, time.UTC)
-		cIter, err := r.Log(&git.LogOptions{From: ref.Hash(), Since: &since, Until: &until})
-		CheckIfError(err)
-
-		// ... just iterates over the commits, printing it
-		err = cIter.ForEach(func(c *object.Commit) error {
-			fmt.Println(c)
-
-			return nil
-		})
+		// Store commit data
+		err = cIter.ForEach(dbutils.InsertCommit)
 		CheckIfError(err)
 	},
 }

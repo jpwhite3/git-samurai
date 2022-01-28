@@ -16,3 +16,4 @@
 
 dist/
 test-results.json
+*.db
