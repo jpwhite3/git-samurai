@@ -7,5 +7,4 @@ A git repository analysis tool that slices up your commit data and generates rep
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jpwhite3_git-samurai&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jpwhite3_git-samurai)
 
-[![Known Vulnerabilities](https://snyk.io/test/github/jpwhite3/git-samurai/badge.svg)]
-(https://snyk.io/test/github/jpwhite3/git-samurai)
+[![Known Vulnerabilities](https://snyk.io/test/github/jpwhite3/git-samurai/badge.svg)](https://snyk.io/test/github/jpwhite3/git-samurai)
