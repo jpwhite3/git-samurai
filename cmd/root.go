@@ -27,6 +27,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var RepoPath string
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "git-samurai",
@@ -43,30 +45,11 @@ to quickly create a Cobra application.`,
 }
 
 func RootCmdRunE(cmd *cobra.Command, args []string) error {
-	toggled, err := cmd.Flags().GetBool("toggle")
-
-	if err != nil {
-		return err
-	}
-
-	if toggled {
-		cmd.Println("ok")
-		return nil
-	}
-
-	return errors.New("not ok")
+	return errors.New("not implemented")
 }
 
 func RootCmdFlags(cmd *cobra.Command) {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.git-samurai.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	cmd.PersistentFlags().StringVarP(&RepoPath, "repo-path", "r", ".", "Path to local git repository")
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

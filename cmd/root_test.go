@@ -39,17 +39,15 @@ func TestRootCmdToggles(t *testing.T) {
 	}{
 		{
 			args: nil,
-			err:  errors.New("not ok"),
+			err:  errors.New("not implemented"),
 		},
 		{
-			args: []string{"-t"},
-			err:  nil,
-			out:  "ok",
+			args: []string{"-r"},
+			err:  errors.New("flag needs an argument: 'r' in -r"),
 		},
 		{
-			args: []string{"--toggle"},
-			err:  nil,
-			out:  "ok",
+			args: []string{"--repo-path"},
+			err:  errors.New("flag needs an argument: --repo-path"),
 		},
 		{
 			args: []string{"--arbitrary"},
@@ -62,9 +60,7 @@ func TestRootCmdToggles(t *testing.T) {
 
 	for _, tc := range tt {
 		out, err := execute(t, root, tc.args...)
-
 		assert.Equal(t, tc.err, err)
-
 		if tc.err == nil {
 			assert.Equal(t, tc.out, out)
 		}

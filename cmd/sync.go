@@ -22,24 +22,10 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"errors"
-	"fmt"
-	"os"
-
-	"github.com/spf13/cobra"
-
 	"github.com/go-git/go-git/v5"
-	dbutils "github.com/jpwhite3/git-samurai/dbutils"
+	"github.com/jpwhite3/git-samurai/dbutils"
+	"github.com/spf13/cobra"
 )
-
-func CheckIfError(err error) {
-	if err == nil {
-		return
-	}
-
-	fmt.Printf("\x1b[31;1m%s\x1b[0m\n", fmt.Sprintf("error: %s", err))
-	os.Exit(1)
-}
 
 // syncCmd represents the sync command
 var syncCmd = &cobra.Command{
@@ -51,49 +37,32 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		r, err := git.PlainOpen(".")
-		CheckIfError(err)
-
-		// Retrieve the commit history
-		cIter, err := r.Log(&git.LogOptions{All: true})
-		CheckIfError(err)
-
-		// Store commit data
-		err = cIter.ForEach(dbutils.InsertCommit)
-		CheckIfError(err)
-	},
+	RunE: SyncCmdRunE,
 }
 
 func SyncCmdRunE(cmd *cobra.Command, args []string) error {
-	option, err := cmd.Flags().GetBool("option")
 
+	r, err := git.PlainOpen(RepoPath)
 	if err != nil {
 		return err
 	}
 
-	if option {
-		cmd.Println("ok")
-		return nil
+	// Retrieve the commit history
+	cIter, err := r.Log(&git.LogOptions{All: true})
+	if err != nil {
+		return err
 	}
 
-	return errors.New("not ok")
-}
+	// Store commit data
+	err = cIter.ForEach(dbutils.InsertCommit)
+	if err != nil {
+		return err
+	}
 
-func SyncCmdFlags(cmd *cobra.Command) {
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// syncCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// syncCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	cmd.Flags().BoolP("option", "o", false, "Help message for option")
+	cmd.Println("ok")
+	return nil
 }
 
 func init() {
 	rootCmd.AddCommand(syncCmd)
-	SyncCmdFlags(rootCmd)
 }
