@@ -23,6 +23,7 @@ package cmd
 
 import (
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/jpwhite3/git-samurai/dbutils"
 	"github.com/spf13/cobra"
 )
@@ -42,13 +43,15 @@ to quickly create a Cobra application.`,
 
 func SyncCmdRunE(cmd *cobra.Command, args []string) error {
 
-	r, err := git.PlainOpen(RepoPath)
+	// dbutils.DeleteDatabase()
+
+	repo, err := git.PlainOpen(RepoPath)
 	if err != nil {
 		return err
 	}
 
 	// Retrieve the commit history
-	cIter, err := r.Log(&git.LogOptions{All: true})
+	cIter, err := repo.Log(&git.LogOptions{All: true})
 	if err != nil {
 		return err
 	}
@@ -58,6 +61,18 @@ func SyncCmdRunE(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+
+	headRef, err := repo.Head()
+	if err != nil {
+		return err
+	}
+
+	// dbutils.RecordBlame()
+	c, err := object.GetCommit(repo.Storer, headRef.Hash())
+	if err != nil {
+		return err
+	}
+	dbutils.RecordBlame(c)
 
 	cmd.Println("ok")
 	return nil
